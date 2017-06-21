@@ -159,11 +159,14 @@ bool MainWindow::reloadImage() {
 		return false;
 	}
 
-//	this->setFixedSize(matImg.cols, matImg.rows);
-
-	qImg = qImg.scaledToWidth(ui->lbl_image->width(), Qt::SmoothTransformation);
-	ui->lbl_image->setPixmap(QPixmap::fromImage(qImg));
-
+	if (qImg.width() <= qImg.height()) {
+		qImg = qImg.scaledToHeight(ui->lbl_image->height(), Qt::SmoothTransformation);
+		ui->lbl_image->setPixmap(QPixmap::fromImage(qImg));
+	}
+	else {
+		qImg = qImg.scaledToWidth(ui->lbl_image->width(), Qt::SmoothTransformation);
+		ui->lbl_image->setPixmap(QPixmap::fromImage(qImg));
+	}
 	return true;
 
 }
