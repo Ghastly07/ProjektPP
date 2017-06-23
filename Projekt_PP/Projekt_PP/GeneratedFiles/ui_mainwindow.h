@@ -71,7 +71,8 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QStringLiteral("MainWindow"));
-        MainWindow->resize(986, 557);
+        MainWindow->resize(971, 557);
+        MainWindow->setMouseTracking(true);
         MainWindow->setAcceptDrops(true);
         actionPoli = new QAction(MainWindow);
         actionPoli->setObjectName(QStringLiteral("actionPoli"));
@@ -127,11 +128,10 @@ public:
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         lbl_image = new QLabel(centralWidget);
         lbl_image->setObjectName(QStringLiteral("lbl_image"));
-        lbl_image->setGeometry(QRect(0, 10, 611, 481));
-        lbl_image->setMouseTracking(true);
+        lbl_image->setGeometry(QRect(0, 0, 400, 400));
         lbl_mousepos = new QGroupBox(centralWidget);
         lbl_mousepos->setObjectName(QStringLiteral("lbl_mousepos"));
-        lbl_mousepos->setGeometry(QRect(780, 60, 141, 191));
+        lbl_mousepos->setGeometry(QRect(780, 60, 400, 400));
         label = new QLabel(lbl_mousepos);
         label->setObjectName(QStringLiteral("label"));
         label->setGeometry(QRect(40, 50, 47, 13));
@@ -141,7 +141,7 @@ public:
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QStringLiteral("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 986, 21));
+        menuBar->setGeometry(QRect(0, 0, 971, 21));
         menuFile = new QMenu(menuBar);
         menuFile->setObjectName(QStringLiteral("menuFile"));
         menuZoom = new QMenu(menuBar);
