@@ -6,9 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>986</width>
+    <width>971</width>
     <height>557</height>
    </rect>
+  </property>
+  <property name="mouseTracking">
+   <bool>true</bool>
   </property>
   <property name="acceptDrops">
    <bool>true</bool>
@@ -21,13 +24,10 @@
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>10</y>
-      <width>611</width>
-      <height>481</height>
+      <y>0</y>
+      <width>400</width>
+      <height>400</height>
      </rect>
-    </property>
-    <property name="mouseTracking">
-     <bool>true</bool>
     </property>
     <property name="text">
      <string/>
@@ -38,8 +38,8 @@
      <rect>
       <x>780</x>
       <y>60</y>
-      <width>141</width>
-      <height>191</height>
+      <width>400</width>
+      <height>400</height>
      </rect>
     </property>
     <property name="title">
@@ -75,7 +75,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>986</width>
+     <width>971</width>
      <height>21</height>
     </rect>
    </property>

@@ -12,6 +12,7 @@
 #include <opencv2\highgui.hpp>
 #include <opencv2\opencv.hpp>
 #include <string>
+#include <iostream>
 
 namespace Ui {
 	class MainWindow;
@@ -29,8 +30,12 @@ public:
 	QSize minimumSizeHint() const { return qImg.size(); }
 
 	public slots:
-	bool reloadImage();
+	bool reloadImage(cv::Mat matImg);
 	void DrawFigure(int, int);
+	void DrawAll();
+	void DeleteAngle (int, int);
+	void DivideSectionCalculate(int);
+	void DivideSection();
 
 	private slots:
 	void on_actionPoli_triggered();
@@ -38,12 +43,18 @@ public:
 	void on_actionOpen_triggered();
 	void on_actionSave_Image_triggered();
 	
+    void on_actionPoly_triggered();
+
+    void on_actionDivide_section_triggered();
+
 private:
 	void onMouseEvent(const QString &eventName,const QPoint &pos);
 	Ui::MainWindow *ui;
 
 protected:
 	void mousePressEvent(QMouseEvent *event)override;
+	void mouseMoveEvent(QMouseEvent *event)override;
+	bool eventFilter(QObject *obj, QEvent *event);
 	bool valid;
 	QImage qImg;
 	cv::Mat matImg;
