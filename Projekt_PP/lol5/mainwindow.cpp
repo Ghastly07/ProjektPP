@@ -1,16 +1,21 @@
+﻿#pragma once
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QMessageBox>
 #include <vector>
-#include <Windows.h>
+//#include <Windows.h>
 struct wsp {
 	int x;
 	int y;
 	wsp(int a, int b) { x = a; y = b; }
 };
+
 std::vector <std::vector<wsp>> wektorKsztaltow;
 std::vector <wsp> wektorTemp;
-int count = 0,iwsk, jwsk;;
+std::vector <wsp> vRelativeX0;
+std::vector <wsp> vRelativeX100;
+
+int count = 0, iwsk, jwsk;;
 //float scaleX, scaleY;
 int doit = -1;
 cv::Mat copy, orginalImg;
@@ -22,7 +27,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
 	ui->setupUi(this);
 	qApp->installEventFilter(this);
-	
+
 	//ui->xposspin->setMinimum(-INT_MAX);
 	//ui->xposspin->setMaximum(INT_MAX);
 	valid = false;
@@ -39,7 +44,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 	{
 		QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
 		if (doit == 0) {
-			
+
 			matImg.copyTo(copy);
 
 			for (int i = 0; i < wektorKsztaltow.size(); i++) {
@@ -53,13 +58,13 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 							wektorKsztaltow[iwsk].insert(wektorKsztaltow[iwsk].begin() + jwsk, wsp(mouseEvent->pos().x(), mouseEvent->pos().y()));
 							DrawAll();
 						}
-						
+
 						reloadImage(copy);
 					}
 				}
 			}
 		}
-		
+
 		if ((count != 0) && (doit == 1)) {
 			matImg.copyTo(copy);
 			if ((abs(wektorTemp[0].x - mouseEvent->pos().x()) < 8) && (abs(wektorTemp[0].y - mouseEvent->pos().y()) < 8)) {
@@ -70,8 +75,8 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 			reloadImage(copy);
 		}
 		statusBar()->showMessage(QString("Mouse move (%1,%2)").arg(mouseEvent->pos().x()).arg(mouseEvent->pos().y()));
-	
-		
+
+
 	}
 	return false;
 }
@@ -119,6 +124,65 @@ void MainWindow::DrawFigure(int x, int y) {
 	count++;
 }
 
+void MainWindow::DrawRelativePoint(int choice) {
+	// Dla 0 rysujemy Relative_X0, dla 100 rysujemy Relative_X100
+	switch (choice) {
+	case 0:
+		circle(matImg, cv::Point(vRelativeX0[0].x, vRelativeX0[0].y), 3.0, cv::Scalar(0, 0, 0), -1, 0);
+		reloadImage(matImg);
+		doit = -1;
+		break;
+
+	case 100:
+		circle(matImg, cv::Point(vRelativeX100[0].x, vRelativeX100[0].y), 3.0, cv::Scalar(255, 255, 255), -1, 0);
+		reloadImage(matImg);
+		doit = -1;
+		break;
+
+	default:
+		break;
+	}
+}
+
+void MainWindow::on_actionTop_Hat_triggered() {
+	if (matImg.data != NULL) {
+		QMessageBox::information(this, tr("Error"), "Not implemented yet!", 0, QFileDialog::DontUseNativeDialog);
+	}
+	else {
+		QMessageBox::information(this, tr("Error"), "No image loaded!", 0, QFileDialog::DontUseNativeDialog);
+	}
+}
+
+void MainWindow::on_actionRelative_X0_triggered()
+{
+	if (matImg.data != NULL) {
+		// Sprawdzamy czy relative x0 był już wcześniej zdefiniowany, jeśli tak ...
+		if (relativeX0) {
+			// to go usuwamy
+			vRelativeX0.erase(vRelativeX0.begin());
+		}
+		doit = 2;
+	}
+	else {
+		QMessageBox::information(this, tr("Error"), "No image loaded!", 0, QFileDialog::DontUseNativeDialog);
+	}
+}
+
+void MainWindow::on_actionRelative_X100_triggered()
+{
+	if (matImg.data != NULL) {
+		// Sprawdzamy czy relative x100 był już wcześniej zdefiniowany, jeśli tak ...
+		if (relativeX100) {
+			// to go usuwamy
+			vRelativeX100.erase(vRelativeX100.begin());
+		}
+		doit = 3;
+	}
+	else {
+		QMessageBox::information(this, tr("Error"), "No image loaded!", 0, QFileDialog::DontUseNativeDialog);
+	}
+}
+
 
 void MainWindow::on_actionPoli_triggered()
 {
@@ -127,7 +191,7 @@ void MainWindow::on_actionPoli_triggered()
 
 void MainWindow::on_actionOpen_triggered()
 {
-	QString filename = QFileDialog::getOpenFileName(this, tr("Choose"), "", tr("All files (*.*);;JPEG (*.jpg *.jpeg);;BMP (*.bmp);;PNG (*.png);;TIFF (*.tif)"));
+	QString filename = QFileDialog::getOpenFileName(this, tr("Choose"), "", tr("All files (*.*);;JPEG (*.jpg *.jpeg);;BMP (*.bmp);;PNG (*.png);;TIFF (*.tif)"), 0, QFileDialog::DontUseNativeDialog);
 
 	std::string filenameString = filename.toLocal8Bit().constData();
 
@@ -157,10 +221,50 @@ void MainWindow::on_actionOpen_triggered()
 			QMessageBox::information(this, tr("Unable to open file"), "Unable to open specified file.");
 		}
 	}
+	
+
+
 	reloadImage(matImg);
 	matImg.copyTo(orginalImg);
 }
+void MainWindow::on_actionSDA_Find_Cells_triggered() {
+	//przykladowe wywolanie
+	QMessageBox::information(this, tr("SDA"), "Test SDA!");
+	cv::Mat dst;
+	matImg.convertTo(dst, CV_64F, 1, 0);
+	array< double, 2 >^ workCopy = gcnew array<double, 2>(dst.rows, matImg.cols);
 
+
+	double **ptrDst = new double*[dst.rows];
+	for (int i = 0; i < dst.rows; ++i) {
+		ptrDst[i] = new double[dst.cols];
+		ptrDst[i] = dst.ptr<double>(i);
+
+		for (int j = 0; j < dst.cols; ++j) {
+
+			workCopy[i, j] = ptrDst[i][j];
+			//std::cout << std::setw(5) << workCopy[i, j];
+		}
+		//std::cout << std::endl;
+	}
+
+	sda.SDA_disc(workCopy, dst.rows, dst.cols, 40, 0, 50);
+	//array< double, 2 >^ SDA::SDA_disc(array< double, 2 >^%mac, int sx, int sy, double r = 40, int mode = 0, int min_roznica = 50)
+
+	for (int i = 0; i < dst.rows; ++i) {
+		ptrDst[i] = new double[dst.cols];
+		ptrDst[i] = dst.ptr<double>(i);
+
+		for (int j = 0; j < dst.cols; ++j) {
+
+			ptrDst[i][j] = workCopy[i, j];
+			//std::cout << workCopy[i, j] << "  ";
+			dst.at<double>(i, j);
+		}
+		//std::cout << std::endl;
+	}
+
+}
 void MainWindow::on_actionSave_Image_triggered()
 {
 	if (valid) {
@@ -168,10 +272,10 @@ void MainWindow::on_actionSave_Image_triggered()
 
 		QString fileName = QFileDialog::getSaveFileName
 		(this,
-		tr("Save File"),
-		"",
-		tr(".bmp;; .jpeg;; .jpg;; .png;; .tiff"),
-		&extension);
+			tr("Save File"),
+			"",
+			tr(".bmp;; .jpeg;; .jpg;; .png;; .tiff"),
+			&extension, QFileDialog::DontUseNativeDialog);
 
 		fileName += extension;
 
@@ -179,33 +283,37 @@ void MainWindow::on_actionSave_Image_triggered()
 		cv::imwrite(fileNameString, matImg);
 	}
 	else {
-		QMessageBox::information(this, tr("Unable to open file"), "You must first open the image.");
+		QMessageBox::information(this, tr("Unable to open file"), "You must first open the image.", 0, QFileDialog::DontUseNativeDialog);
 	}
 }
 
 void MainWindow::mouseMoveEvent(QMouseEvent *event) {
-	
+
 	//ui->xposspin->setValue(event->x());
 	//onMouseEvent("Move", event->pos());
 }
 
 void MainWindow::mousePressEvent(QMouseEvent * event)
 {
-
-	
 	switch (doit) {
 	case 0:
 		if (event->button() == Qt::RightButton) {
 			DeleteAngle(event->pos().x(), event->pos().y());
 		}
-		
+
 		break;
 	case 1:
 		onMouseEvent("Move", event->pos());
 		break;
+	case 2:
+		onMouseEvent("RelativeX0", event->pos());
+		break;
+	case 3:
+		onMouseEvent("RelativeX100", event->pos());
+		break;
 	}
 	//ui->xposspin->setValue(event->x());
-	
+
 	//onMouseEvent("Move", event->pos());
 	//QWidget::mouseMoveEvent(event);
 }
@@ -214,19 +322,47 @@ void MainWindow::mousePressEvent(QMouseEvent * event)
 void MainWindow::onMouseEvent(const QString &eventName, const QPoint &pos)
 {
 	ui->xposspin->setValue(10);
-	if (doit == 0) {
-		
+
+	switch (doit) {
+	case 0:
 		if (movePoint == false) {
 			movePoint = true;
 		}
 		else {
 			movePoint = false;
 		}
-		
-	}
+		break;
 
-	if (doit == 1) {
+	case 1:
 		DrawFigure(pos.x(), pos.y());
+		break;
+
+	case 2:
+		vRelativeX0.push_back(wsp(pos.x(), pos.y()));
+		if (relativeX0) {
+			// jeśli już wcześniej mieliśmy jakiś punkt to musimy przerysować całość
+			DrawAll();
+		}
+		else {
+			// jeśli nie, to wystarczy narysować nasz punkt
+			relativeX0 = true;
+			DrawRelativePoint(0);
+		}
+		break;
+
+	case 3:
+		vRelativeX100.push_back(wsp(pos.x(), pos.y()));
+		if (relativeX100) {
+			DrawAll();
+		}
+		else {
+			relativeX100 = true;
+			DrawRelativePoint(100);
+		}
+		break;
+
+	default:
+		break;
 	}
 }
 
@@ -291,6 +427,13 @@ void MainWindow::DrawAll() {
 			}
 		}
 	}
+
+	// Sprawdzamy czy trzeba narysować nowe Relativy
+	if (relativeX0)
+		DrawRelativePoint(0);
+	if (relativeX100)
+		DrawRelativePoint(100);
+
 	reloadImage(matImg);
 	//cv::imshow("splash", img);
 }

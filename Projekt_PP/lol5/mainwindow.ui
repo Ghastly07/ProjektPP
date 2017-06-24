@@ -126,6 +126,7 @@
     <addaction name="actionSDA_Find_Cells"/>
     <addaction name="actionNegative"/>
     <addaction name="actionOption_Window"/>
+    <addaction name="actionTop_Hat"/>
    </widget>
    <widget class="QMenu" name="menuAbout">
     <property name="title">
@@ -271,6 +272,11 @@
   <action name="actionOption_Window">
    <property name="text">
     <string>Option Window</string>
+   </property>
+  </action>
+  <action name="actionTop_Hat">
+   <property name="text">
+    <string>Top-Hat</string>
    </property>
   </action>
  </widget>
