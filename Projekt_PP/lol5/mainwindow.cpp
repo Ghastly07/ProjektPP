@@ -7,7 +7,10 @@
 struct wsp {
 	int x;
 	int y;
-	wsp(int a, int b) { x = a; y = b; }
+	int b;
+	int g;
+	int r;
+	wsp(int a1, int b1, int k, int h, int j) { x = a1; y = b1; b = k; g = h; r = j;}
 };
 
 std::vector <std::vector<wsp>> wektorKsztaltow;
@@ -15,7 +18,7 @@ std::vector <wsp> wektorTemp;
 std::vector <wsp> vRelativeX0;
 std::vector <wsp> vRelativeX100;
 
-int count = 0, iwsk, jwsk;;
+int count = 0, iwsk, jwsk, xpos , ypos;
 //float scaleX, scaleY;
 int doit = -1;
 cv::Mat copy, orginalImg;
@@ -27,15 +30,66 @@ MainWindow::MainWindow(QWidget *parent) :
 {
 	ui->setupUi(this);
 	qApp->installEventFilter(this);
-
 	//ui->xposspin->setMinimum(-INT_MAX);
-	//ui->xposspin->setMaximum(INT_MAX);
+	ui->xposspin->setMaximum(INT_MAX);
 	valid = false;
 }
 
 MainWindow::~MainWindow()
 {
 	delete ui;
+}
+
+void MainWindow::contextMenuEvent(QContextMenuEvent * event)
+{
+	QMenu *menu = new QMenu();
+	//QAction *limpiarAction = new QAction("Limpiar" ,this);
+	//connect(limpiarAction, SIGNAL(triggered()), this,SLOT(limpiar()));
+	//menu->addAction((limpiarAction));
+	//menu->addSeparator();
+	menu->addAction(ui->actionDelete_Vertex);
+	QMenu *list = new QMenu("Color", this);
+	connect(list, SIGNAL(triggered()), this, SLOT(list()));
+
+	QAction *mediumBlueAction = new QAction("Medium Blue" ,this);
+	connect(mediumBlueAction, SIGNAL(triggered()), this,SLOT(mediumBlue()));
+
+	QAction *lightBlueAction = new QAction("Light Blue", this);
+	connect(lightBlueAction, SIGNAL(triggered()), this, SLOT(lightBlue()));
+
+	QAction *lightRedAction = new QAction("Light Red", this);
+	connect(lightRedAction, SIGNAL(triggered()), this, SLOT(lightRed()));
+	
+	QAction *greenAction = new QAction("Green", this);
+	connect(greenAction, SIGNAL(triggered()), this, SLOT(green()));
+	
+	QAction *yellowAction = new QAction("Yellow", this);
+	connect(yellowAction, SIGNAL(triggered()), this, SLOT(yellow()));
+	
+	QAction *magentaAction = new QAction("Magenta", this);
+	connect(magentaAction, SIGNAL(triggered()), this, SLOT(magenta()));
+
+	QAction *cyanAction = new QAction("Cyan", this);
+	connect(cyanAction, SIGNAL(triggered()), this, SLOT(cyan()));
+
+	QAction *lightGrayAction = new QAction("Light Gray", this);
+	connect(lightGrayAction, SIGNAL(triggered()), this, SLOT(lightGray()));
+
+	QAction *blackAction = new QAction("Black", this);
+	connect(blackAction, SIGNAL(triggered()), this, SLOT(black()));
+
+	list->addAction(mediumBlueAction);
+	list->addAction(lightBlueAction);
+	list->addAction(lightRedAction);
+	list->addAction(greenAction);
+	list->addAction(yellowAction);
+	list->addAction(magentaAction);
+	list->addAction(cyanAction);
+	list->addAction(lightGrayAction);
+	list->addAction(blackAction);
+	menu->addMenu(list);
+	menu->exec(QCursor::pos());		
+
 }
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)
@@ -55,7 +109,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 						jwsk = j;
 						if (mouseEvent->buttons() == Qt::LeftButton) {
 							wektorKsztaltow[iwsk].erase(wektorKsztaltow[iwsk].begin() + jwsk);
-							wektorKsztaltow[iwsk].insert(wektorKsztaltow[iwsk].begin() + jwsk, wsp(mouseEvent->pos().x(), mouseEvent->pos().y()));
+							wektorKsztaltow[iwsk].insert(wektorKsztaltow[iwsk].begin() + jwsk, wsp(mouseEvent->pos().x(), mouseEvent->pos().y(),255,0,0));
 							DrawAll();
 						}
 
@@ -98,10 +152,10 @@ void MainWindow::DeleteAngle(int x, int y) {
 		}
 	}
 }
-void MainWindow::DrawFigure(int x, int y) {
+void MainWindow::DrawFigure(int x, int y,int b,int g, int r) {
 
 	if (count == 0) {
-		wektorTemp.push_back(wsp(x, y));
+		wektorTemp.push_back(wsp(x, y,255,0,0));
 		circle(matImg, cv::Point(x, y), 3.0, cv::Scalar(255, 0, 0), -1, 8);
 	}
 	if (count > 0) {
@@ -115,7 +169,7 @@ void MainWindow::DrawFigure(int x, int y) {
 			doit = 0;
 		}
 		else {
-			wektorTemp.push_back(wsp(x, y));
+			wektorTemp.push_back(wsp(x, y,255,0,0));
 			circle(matImg, cv::Point(wektorTemp[count].x, wektorTemp[count].y), 3.0, cv::Scalar(255, 0, 0), -1, 8);
 			cv::line(matImg, cv::Point(wektorTemp[count - 1].x, wektorTemp[count - 1].y), cv::Point(wektorTemp[count].x, wektorTemp[count].y), cv::Scalar(255, 0, 0), 1, 8);
 			reloadImage(matImg);
@@ -128,13 +182,13 @@ void MainWindow::DrawRelativePoint(int choice) {
 	// Dla 0 rysujemy Relative_X0, dla 100 rysujemy Relative_X100
 	switch (choice) {
 	case 0:
-		circle(matImg, cv::Point(vRelativeX0[0].x, vRelativeX0[0].y), 3.0, cv::Scalar(0, 0, 0), -1, 0);
+		circle(matImg, cv::Point(vRelativeX0[0].x, vRelativeX0[0].y), 3.0, cv::Scalar(0, 0, 255), -1, 0);
 		reloadImage(matImg);
 		doit = -1;
 		break;
 
 	case 100:
-		circle(matImg, cv::Point(vRelativeX100[0].x, vRelativeX100[0].y), 3.0, cv::Scalar(255, 255, 255), -1, 0);
+		circle(matImg, cv::Point(vRelativeX100[0].x, vRelativeX100[0].y), 3.0, cv::Scalar(0, 0, 0), -1, 0);
 		reloadImage(matImg);
 		doit = -1;
 		break;
@@ -147,6 +201,7 @@ void MainWindow::DrawRelativePoint(int choice) {
 void MainWindow::on_actionTop_Hat_triggered() {
 	if (matImg.data != NULL) {
 		// Trzeba dodać w opcjach możliwość modyfikowania ustawień Top Hat'a
+
 		cv::Mat element = cv::getStructuringElement(morph_elem, cv::Size(2 * morph_size + 1, 2 * morph_size + 1), cv::Point(morph_size, morph_size));
 		cv::morphologyEx(matImg, matImg, cv::MORPH_TOPHAT, element);
 		reloadImage(matImg);
@@ -298,11 +353,13 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event) {
 
 void MainWindow::mousePressEvent(QMouseEvent * event)
 {
+	xpos = event->pos().x();
+	ypos = event->pos().y()-20;
 	switch (doit) {
 	case 0:
-		if (event->button() == Qt::RightButton) {
-			DeleteAngle(event->pos().x(), event->pos().y());
-		}
+		//if (event->button() == Qt::RightButton) {
+		//	DeleteAngle(event->pos().x(), event->pos().y());
+		//}
 
 		break;
 	case 1:
@@ -315,7 +372,7 @@ void MainWindow::mousePressEvent(QMouseEvent * event)
 		onMouseEvent("RelativeX100", event->pos());
 		break;
 	}
-	//ui->xposspin->setValue(event->x());
+	//ui->xposspin->setValue(ypos);
 
 	//onMouseEvent("Move", event->pos());
 	//QWidget::mouseMoveEvent(event);
@@ -324,7 +381,7 @@ void MainWindow::mousePressEvent(QMouseEvent * event)
 
 void MainWindow::onMouseEvent(const QString &eventName, const QPoint &pos)
 {
-	ui->xposspin->setValue(10);
+	//ui->xposspin->setValue(10);
 
 	switch (doit) {
 	case 0:
@@ -337,11 +394,11 @@ void MainWindow::onMouseEvent(const QString &eventName, const QPoint &pos)
 		break;
 
 	case 1:
-		DrawFigure(pos.x(), pos.y());
+		DrawFigure(pos.x(), pos.y(),255,0,0);
 		break;
 
 	case 2:
-		vRelativeX0.push_back(wsp(pos.x(), pos.y()));
+		vRelativeX0.push_back(wsp(pos.x(), pos.y(),0,0,255));
 		if (relativeX0) {
 			// jeśli już wcześniej mieliśmy jakiś punkt to musimy przerysować całość
 			DrawAll();
@@ -354,7 +411,7 @@ void MainWindow::onMouseEvent(const QString &eventName, const QPoint &pos)
 		break;
 
 	case 3:
-		vRelativeX100.push_back(wsp(pos.x(), pos.y()));
+		vRelativeX100.push_back(wsp(pos.x(), pos.y(),255,255,255));
 		if (relativeX100) {
 			DrawAll();
 		}
@@ -411,7 +468,11 @@ bool MainWindow::reloadImage(cv::Mat matImg) {
 }
 void MainWindow::on_actionPoly_triggered()
 {
-	doit = 1;
+	if (matImg.data != NULL)
+		doit = 1;
+	else
+		QMessageBox::information(this, tr("Error"), "No image loaded!", 0, QFileDialog::DontUseNativeDialog);
+
 }
 
 void MainWindow::DrawAll() {
@@ -420,13 +481,13 @@ void MainWindow::DrawAll() {
 	for (int i = 0; i < wektorKsztaltow.size(); i++) {
 		for (int j = 0; j <= wektorKsztaltow[i].size() - 1; j++) {
 			if (j == wektorKsztaltow[i].size() - 1) {
-				circle(matImg, cv::Point(wektorKsztaltow[i][j].x, wektorKsztaltow[i][j].y), 3.0, cv::Scalar(255, 0, 0), -1, 8);
-				cv::line(matImg, cv::Point(wektorKsztaltow[i][j].x, wektorKsztaltow[i][j].y), cv::Point(wektorKsztaltow[i][0].x, wektorKsztaltow[i][0].y), cv::Scalar(255, 0, 0), 1, 8);
+				circle(matImg, cv::Point(wektorKsztaltow[i][j].x, wektorKsztaltow[i][j].y), 3.0, cv::Scalar(wektorKsztaltow[i][j].b, wektorKsztaltow[i][j].g, wektorKsztaltow[i][j].r), -1, 8);
+				cv::line(matImg, cv::Point(wektorKsztaltow[i][j].x, wektorKsztaltow[i][j].y), cv::Point(wektorKsztaltow[i][0].x, wektorKsztaltow[i][0].y), cv::Scalar(wektorKsztaltow[i][j].b, wektorKsztaltow[i][j].g, wektorKsztaltow[i][j].r), 1, 8);
 
 			}
 			else {
-				circle(matImg, cv::Point(wektorKsztaltow[i][j].x, wektorKsztaltow[i][j].y), 3.0, cv::Scalar(255, 0, 0), -1, 8);
-				cv::line(matImg, cv::Point(wektorKsztaltow[i][j].x, wektorKsztaltow[i][j].y), cv::Point(wektorKsztaltow[i][j + 1].x, wektorKsztaltow[i][j + 1].y), cv::Scalar(255, 0, 0), 1, 8);
+				circle(matImg, cv::Point(wektorKsztaltow[i][j].x, wektorKsztaltow[i][j].y), 3.0, cv::Scalar(wektorKsztaltow[i][j].b, wektorKsztaltow[i][j].g, wektorKsztaltow[i][j].r), -1, 8);
+				cv::line(matImg, cv::Point(wektorKsztaltow[i][j].x, wektorKsztaltow[i][j].y), cv::Point(wektorKsztaltow[i][j + 1].x, wektorKsztaltow[i][j + 1].y), cv::Scalar(wektorKsztaltow[i][j].b, wektorKsztaltow[i][j].g, wektorKsztaltow[i][j].r), 1, 8);
 			}
 		}
 	}
@@ -444,6 +505,12 @@ void MainWindow::on_actionDivide_section_triggered()
 {
 	DivideSection();
 
+}
+
+void MainWindow::on_actionDelete_Vertex_triggered()
+{
+	//ui->xposspin->setValue(event->pos().x());
+	DeleteAngle(xpos, ypos);
 }
 
 
@@ -550,8 +617,158 @@ void MainWindow::DivideSectionCalculate(int pos) {
 
 
 void MainWindow::DivideSection() {
-
 	for (int i = 0; i < wektorKsztaltow.size(); i++) {
 		DivideSectionCalculate(i);
 	}
+}	
+void MainWindow::on_actionColor_triggered()
+{
+
 }
+
+void MainWindow::mediumBlue()
+{
+
+	for (int i = 0; i < wektorKsztaltow.size(); i++) {
+		for (int j = 0; j < wektorKsztaltow[i].size(); j++) {
+			if ((abs(wektorKsztaltow[i][j].x - xpos) < 8) && (abs(wektorKsztaltow[i][j].y - ypos) < 8)) {
+				for (int k = 0; k < wektorKsztaltow[i].size(); k++) {
+					wektorKsztaltow[i][k].b = 255;
+					wektorKsztaltow[i][k].g = 0;
+					wektorKsztaltow[i][k].r = 0;
+				}
+			}
+		}
+	}
+	DrawAll();
+}
+
+void MainWindow::lightBlue()
+{
+	for (int i = 0; i < wektorKsztaltow.size(); i++) {
+		for (int j = 0; j < wektorKsztaltow[i].size(); j++) {
+			if ((abs(wektorKsztaltow[i][j].x - xpos) < 8) && (abs(wektorKsztaltow[i][j].y - ypos) < 8)) {
+				for (int k = 0; k < wektorKsztaltow[i].size(); k++) {
+					wektorKsztaltow[i][k].b = 100;
+					wektorKsztaltow[i][k].g = 15;
+					wektorKsztaltow[i][k].r = 15;
+				}
+			}
+		}
+	}
+	DrawAll();
+}
+
+void MainWindow::lightRed()
+{
+	ui->xposspin->setValue(wektorKsztaltow[0][0].y);
+	for (int i = 0; i < wektorKsztaltow.size(); i++) {
+		for (int j = 0; j < wektorKsztaltow[i].size(); j++) {
+			if ((abs(wektorKsztaltow[i][j].x - xpos) < 8) && (abs(wektorKsztaltow[i][j].y - ypos) < 8)) {
+				for (int k = 0; k < wektorKsztaltow[i].size(); k++) {
+					wektorKsztaltow[i][k].b = 0;
+					wektorKsztaltow[i][k].g = 0;
+					wektorKsztaltow[i][k].r = 255;
+				}
+			}
+		}
+	}
+	DrawAll();
+}
+
+void MainWindow::green()
+{
+	for (int i = 0; i < wektorKsztaltow.size(); i++) {
+		for (int j = 0; j < wektorKsztaltow[i].size(); j++) {
+			if ((abs(wektorKsztaltow[i][j].x - xpos) < 8) && (abs(wektorKsztaltow[i][j].y - ypos) < 8)) {
+				for (int k = 0; k < wektorKsztaltow[i].size(); k++) {
+					wektorKsztaltow[i][k].b = 0;
+					wektorKsztaltow[i][k].g = 255;
+					wektorKsztaltow[i][k].r = 0;
+				}
+			}
+		}
+	}
+	DrawAll();
+}
+
+void MainWindow::yellow()
+{
+	for (int i = 0; i < wektorKsztaltow.size(); i++) {
+		for (int j = 0; j < wektorKsztaltow[i].size(); j++) {
+			if ((abs(wektorKsztaltow[i][j].x - xpos) < 8) && (abs(wektorKsztaltow[i][j].y - ypos) < 8)) {
+				for (int k = 0; k < wektorKsztaltow[i].size(); k++) {
+					wektorKsztaltow[i][k].b = 0;
+					wektorKsztaltow[i][k].g = 255;
+					wektorKsztaltow[i][k].r = 255;
+				}
+			}
+		}
+	}
+	DrawAll();
+}
+
+void MainWindow::magenta()
+{
+	for (int i = 0; i < wektorKsztaltow.size(); i++) {
+		for (int j = 0; j < wektorKsztaltow[i].size(); j++) {
+			if ((abs(wektorKsztaltow[i][j].x - xpos) < 8) && (abs(wektorKsztaltow[i][j].y - ypos) < 8)) {
+				for (int k = 0; k < wektorKsztaltow[i].size(); k++) {
+					wektorKsztaltow[i][k].b = 214;
+					wektorKsztaltow[i][k].g = 112;
+					wektorKsztaltow[i][k].r = 218;
+				}
+			}
+		}
+	}
+	DrawAll();
+}
+
+void MainWindow::cyan()
+{
+	for (int i = 0; i < wektorKsztaltow.size(); i++) {
+		for (int j = 0; j < wektorKsztaltow[i].size(); j++) {
+			if ((abs(wektorKsztaltow[i][j].x - xpos) < 8) && (abs(wektorKsztaltow[i][j].y - ypos) < 8)) {
+				for (int k = 0; k < wektorKsztaltow[i].size(); k++) {
+					wektorKsztaltow[i][k].b = 255;
+					wektorKsztaltow[i][k].g = 255;
+					wektorKsztaltow[i][k].r = 0;
+				}
+			}
+		}
+	}
+	DrawAll();
+}
+
+void MainWindow::lightGray()
+{
+	for (int i = 0; i < wektorKsztaltow.size(); i++) {
+		for (int j = 0; j < wektorKsztaltow[i].size(); j++) {
+			if ((abs(wektorKsztaltow[i][j].x - xpos) < 8) && (abs(wektorKsztaltow[i][j].y - ypos) < 8)) {
+				for (int k = 0; k < wektorKsztaltow[i].size(); k++) {
+					wektorKsztaltow[i][k].b = 211;
+					wektorKsztaltow[i][k].g = 211;
+					wektorKsztaltow[i][k].r = 211;
+				}
+			}
+		}
+	}
+	DrawAll();
+}
+
+void MainWindow::black()
+{
+	for (int i = 0; i < wektorKsztaltow.size(); i++) {
+		for (int j = 0; j < wektorKsztaltow[i].size(); j++) {
+			if ((abs(wektorKsztaltow[i][j].x - xpos) < 8) && (abs(wektorKsztaltow[i][j].y - ypos) < 8)) {
+				for (int k = 0; k < wektorKsztaltow[i].size(); k++) {
+					wektorKsztaltow[i][k].b = 0;
+					wektorKsztaltow[i][k].g = 0;
+					wektorKsztaltow[i][k].r = 0;
+				}
+			}
+		}
+	}
+	DrawAll();
+}
+
