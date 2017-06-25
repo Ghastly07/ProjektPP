@@ -11,6 +11,8 @@
 #include <opencv2\imgcodecs.hpp>
 #include <opencv2\highgui.hpp>
 #include <opencv2\opencv.hpp>
+#include <stdlib.h>
+#include <stdio.h>
 #include <string>
 #include <iostream>
 #include"SDA.h"
@@ -62,6 +64,10 @@ protected:
 	bool valid;
 	bool relativeX0 = false;
 	bool relativeX100 = false;
+	// Zmienne Morph s¹ u¿ywane do transformacji top-hat
+	int morph_elem = 0;
+	int morph_size = 7;
+
 	QImage qImg;
 	cv::Mat matImg;
 	cv::Mat tempImg;

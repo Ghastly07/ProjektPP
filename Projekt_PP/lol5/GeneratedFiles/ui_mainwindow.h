@@ -53,6 +53,7 @@ public:
     QAction *actionSDA_Find_Cells;
     QAction *actionNegative;
     QAction *actionOption_Window;
+    QAction *actionTop_Hat;
     QWidget *centralWidget;
     QLabel *lbl_image;
     QGroupBox *lbl_mousepos;
@@ -124,6 +125,8 @@ public:
         actionNegative->setChecked(false);
         actionOption_Window = new QAction(MainWindow);
         actionOption_Window->setObjectName(QStringLiteral("actionOption_Window"));
+        actionTop_Hat = new QAction(MainWindow);
+        actionTop_Hat->setObjectName(QStringLiteral("actionTop_Hat"));
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         lbl_image = new QLabel(centralWidget);
@@ -193,6 +196,7 @@ public:
         menuProcess->addAction(actionSDA_Find_Cells);
         menuProcess->addAction(actionNegative);
         menuProcess->addAction(actionOption_Window);
+        menuProcess->addAction(actionTop_Hat);
 
         retranslateUi(MainWindow);
 
@@ -226,6 +230,7 @@ public:
         actionSDA_Find_Cells->setText(QApplication::translate("MainWindow", "SDA Find Cells", 0));
         actionNegative->setText(QApplication::translate("MainWindow", "Negative", 0));
         actionOption_Window->setText(QApplication::translate("MainWindow", "Option Window", 0));
+        actionTop_Hat->setText(QApplication::translate("MainWindow", "Top-Hat", 0));
         lbl_image->setText(QString());
         lbl_mousepos->setTitle(QApplication::translate("MainWindow", "GroupBox", 0));
         label->setText(QApplication::translate("MainWindow", "X= Y=", 0));
