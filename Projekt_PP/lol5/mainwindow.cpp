@@ -146,7 +146,10 @@ void MainWindow::DrawRelativePoint(int choice) {
 
 void MainWindow::on_actionTop_Hat_triggered() {
 	if (matImg.data != NULL) {
-		QMessageBox::information(this, tr("Error"), "Not implemented yet!", 0, QFileDialog::DontUseNativeDialog);
+		// Trzeba dodać w opcjach możliwość modyfikowania ustawień Top Hat'a
+		cv::Mat element = cv::getStructuringElement(morph_elem, cv::Size(2 * morph_size + 1, 2 * morph_size + 1), cv::Point(morph_size, morph_size));
+		cv::morphologyEx(matImg, matImg, cv::MORPH_TOPHAT, element);
+		reloadImage(matImg);
 	}
 	else {
 		QMessageBox::information(this, tr("Error"), "No image loaded!", 0, QFileDialog::DontUseNativeDialog);
