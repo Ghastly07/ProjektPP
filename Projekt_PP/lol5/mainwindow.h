@@ -11,8 +11,6 @@
 #include <opencv2\imgcodecs.hpp>
 #include <opencv2\highgui.hpp>
 #include <opencv2\opencv.hpp>
-#include <stdlib.h>
-#include <stdio.h>
 #include <string>
 #include <iostream>
 #include"SDA.h"
@@ -28,18 +26,30 @@ class MainWindow : public QMainWindow
 public:
 	explicit MainWindow(QWidget *parent = 0);
 	~MainWindow();
-
+	void contextMenuEvent(QContextMenuEvent *event);
 	QSize sizeHint() const { return qImg.size(); }
 	QSize minimumSizeHint() const { return qImg.size(); }
 
+
 	public slots:
 	bool reloadImage(cv::Mat matImg);
-	void DrawFigure(int, int);
+	void DrawFigure(int, int,int,int,int);
 	void DrawAll();
 	void DeleteAngle(int, int);
 	void DivideSectionCalculate(int);
 	void DivideSection();
 	void DrawRelativePoint(int);
+	void mediumBlue();
+	void lightBlue();
+	void lightRed();
+	void green();
+	void yellow();
+	void magenta();
+	void cyan();
+	void lightGray();
+	void black();
+
+
 
 	private slots:
 	void on_actionPoli_triggered();
@@ -51,6 +61,11 @@ public:
 	void on_actionSave_Image_triggered();
 	void on_actionPoly_triggered();
 	void on_actionDivide_section_triggered();
+//	void on_actionDeleteVertex();
+
+    void on_actionDelete_Vertex_triggered();
+
+    void on_actionColor_triggered();
 
 private:
 	void onMouseEvent(const QString &eventName, const QPoint &pos);
@@ -64,6 +79,7 @@ protected:
 	bool valid;
 	bool relativeX0 = false;
 	bool relativeX100 = false;
+
 	// Zmienne Morph s¹ u¿ywane do transformacji top-hat
 	int morph_elem = 0;
 	int morph_size = 7;

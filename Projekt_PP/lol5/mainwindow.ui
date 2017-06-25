@@ -139,14 +139,6 @@
    <addaction name="menuProcess"/>
    <addaction name="menuAbout"/>
   </widget>
-  <widget class="QToolBar" name="mainToolBar">
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
-  </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionPoli">
    <property name="text">
@@ -277,6 +269,16 @@
   <action name="actionTop_Hat">
    <property name="text">
     <string>Top-Hat</string>
+   </property>
+  </action>
+  <action name="actionDelete_Vertex">
+   <property name="text">
+    <string>Delete_Vertex</string>
+   </property>
+  </action>
+  <action name="actionColor">
+   <property name="text">
+    <string>color</string>
    </property>
   </action>
  </widget>

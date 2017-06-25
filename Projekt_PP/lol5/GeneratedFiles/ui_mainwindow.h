@@ -21,7 +21,6 @@
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QSpinBox>
 #include <QtWidgets/QStatusBar>
-#include <QtWidgets/QToolBar>
 #include <QtWidgets/QWidget>
 
 QT_BEGIN_NAMESPACE
@@ -54,6 +53,8 @@ public:
     QAction *actionNegative;
     QAction *actionOption_Window;
     QAction *actionTop_Hat;
+    QAction *actionDelete_Vertex;
+    QAction *actionColor;
     QWidget *centralWidget;
     QLabel *lbl_image;
     QGroupBox *lbl_mousepos;
@@ -65,7 +66,6 @@ public:
     QMenu *menuAnnotation;
     QMenu *menuProcess;
     QMenu *menuAbout;
-    QToolBar *mainToolBar;
     QStatusBar *statusBar;
 
     void setupUi(QMainWindow *MainWindow)
@@ -127,6 +127,10 @@ public:
         actionOption_Window->setObjectName(QStringLiteral("actionOption_Window"));
         actionTop_Hat = new QAction(MainWindow);
         actionTop_Hat->setObjectName(QStringLiteral("actionTop_Hat"));
+        actionDelete_Vertex = new QAction(MainWindow);
+        actionDelete_Vertex->setObjectName(QStringLiteral("actionDelete_Vertex"));
+        actionColor = new QAction(MainWindow);
+        actionColor->setObjectName(QStringLiteral("actionColor"));
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         lbl_image = new QLabel(centralWidget);
@@ -156,9 +160,6 @@ public:
         menuAbout = new QMenu(menuBar);
         menuAbout->setObjectName(QStringLiteral("menuAbout"));
         MainWindow->setMenuBar(menuBar);
-        mainToolBar = new QToolBar(MainWindow);
-        mainToolBar->setObjectName(QStringLiteral("mainToolBar"));
-        MainWindow->addToolBar(Qt::TopToolBarArea, mainToolBar);
         statusBar = new QStatusBar(MainWindow);
         statusBar->setObjectName(QStringLiteral("statusBar"));
         MainWindow->setStatusBar(statusBar);
@@ -231,6 +232,8 @@ public:
         actionNegative->setText(QApplication::translate("MainWindow", "Negative", 0));
         actionOption_Window->setText(QApplication::translate("MainWindow", "Option Window", 0));
         actionTop_Hat->setText(QApplication::translate("MainWindow", "Top-Hat", 0));
+        actionDelete_Vertex->setText(QApplication::translate("MainWindow", "Delete_Vertex", 0));
+        actionColor->setText(QApplication::translate("MainWindow", "color", 0));
         lbl_image->setText(QString());
         lbl_mousepos->setTitle(QApplication::translate("MainWindow", "GroupBox", 0));
         label->setText(QApplication::translate("MainWindow", "X= Y=", 0));
