@@ -442,6 +442,26 @@ bool MainWindow::reloadImage(cv::Mat matImg) {
 		break;
 	}
 
+	// Bierzemy wysokośc okienka
+	int uiHeight = ui->lbl_image->maximumHeight();
+	int uiWidth = ui->lbl_image->maximumWidth();
+
+	int newHeight = 0;
+	int newWidth = 0;
+	double imgFormat = (double)matImg.cols / (double)matImg.rows;
+
+	if (matImg.cols > matImg.rows) {
+		newWidth = uiWidth;
+		newHeight = newWidth / imgFormat;
+	}
+	else {
+		newHeight = uiHeight;
+		newWidth = newHeight * imgFormat;
+	}
+
+	cv::Size size(newWidth, newHeight);
+	cv::resize(tempImg, tempImg, size);
+
 	// QImage needs the data to be stored continuously in memory
 	assert(tempImg.isContinuous());
 	// Assign OpenCV's image buffer to the QImage. Note that the bytesPerLine parameter
@@ -453,19 +473,13 @@ bool MainWindow::reloadImage(cv::Mat matImg) {
 	catch (...) {
 		return false;
 	}
-//	scaleX = qImg.width();
 
-	if (qImg.width() <= qImg.height()) {
-		qImg = qImg.scaledToHeight(ui->lbl_image->height(), Qt::SmoothTransformation);
-		ui->lbl_image->setPixmap(QPixmap::fromImage(qImg));
-	}
-	else {
-		qImg = qImg.scaledToWidth(ui->lbl_image->width(), Qt::SmoothTransformation);
-		ui->lbl_image->setPixmap(QPixmap::fromImage(qImg));
-	}
-	return true;
+	QPixmap qPixMap = QPixmap::fromImage(qImg);
+	ui->lbl_image->setPixmap(qPixMap);
+	ui->lbl_image->setFixedSize(qPixMap.size());
 
 }
+
 void MainWindow::on_actionPoly_triggered()
 {
 	if (matImg.data != NULL)
